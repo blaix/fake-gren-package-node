@@ -1,0 +1,11 @@
+module Fake.Hello exposing (main)
+
+import Node
+import Stream
+import Task
+
+main =
+    Node.defineSimpleProgram <| \env ->
+        Stream.writeLineAsBytes "Hello from my fake gren package!" env.stdout
+            |> Task.onError (\_ -> Task.succeed env.stdout)
+            |> Node.endSimpleProgram
