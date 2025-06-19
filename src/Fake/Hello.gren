@@ -20,32 +20,33 @@ main =
 
 init env =
     let
-        sayHello =
-            Stream.writeLineAsBytes "Hello from a package!" env.stdout
+        print str =
+            Stream.writeLineAsBytes str env.stdout
                 |> Task.onError (\_ -> Task.succeed env.stdout)
 
-        cwd =
-            Path.fromPosixString "."
+        printError error =
+            print (Debug.toString error)
 
         showCwd fsPerm =
-            cwd
+            Path.fromPosixString "."
                 |> FileSystem.realPath fsPerm
-                |> Task.onError
-                    (\error ->
-                        let
-                            _ =
-                                Debug.log "Error" error
-                        in
-                        Task.succeed cwd
-                    )
                 |> Task.map Path.toPosixString
-                |> Task.map (Debug.log "Path")
+                |> Task.map (String.prepend "CWD: ")
+                |> Task.andThen print
+                |> Task.onError printError
+
+        showApplicationPath =
+            env.applicationPath
+                |> Path.toPosixString
+                |> String.prepend "Application path: "
+                |> print
     in
     Init.await FileSystem.initialize <| \fsPerm ->
         Node.startProgram
             { model = {}
             , command =
-                sayHello
+                print "Hello from a gren package!"
                     |> Task.andThen (\_ -> showCwd fsPerm)
+                    |> Task.andThen (\_ -> showApplicationPath)
                     |> Task.execute
             }
