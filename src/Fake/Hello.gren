@@ -1,5 +1,8 @@
 module Fake.Hello exposing (main)
 
+{-| Fake gren package for testing.
+-}
+
 import FileSystem
 import FileSystem.Path as Path
 import Init

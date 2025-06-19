@@ -1,3 +1,12 @@
 module Fake exposing (fake)
 
+{-| Fake gren package for testing.
+
+@docs fake
+
+-}
+
+{-| A string!
+-}
+fake : String
 fake = "fake"
