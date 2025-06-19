@@ -1,11 +1,48 @@
 module Fake.Hello exposing (main)
 
+import FileSystem
+import FileSystem.Path as Path
+import Init
 import Node
 import Stream
 import Task
 
 main =
-    Node.defineSimpleProgram <| \env ->
-        Stream.writeLineAsBytes "Hello from my fake gren package!" env.stdout
-            |> Task.onError (\_ -> Task.succeed env.stdout)
-            |> Node.endSimpleProgram
+    Node.defineProgram
+        { init = init
+        , update = (\msg model -> { model = model, command = Cmd.none })
+        , subscriptions = (\model -> Sub.none)
+        }
+
+
+init env =
+    let
+        sayHello =
+            Stream.writeLineAsBytes "Hello from a package!" env.stdout
+                |> Task.onError (\_ -> Task.succeed env.stdout)
+
+        cwd =
+            Path.fromPosixString "."
+
+        showCwd fsPerm =
+            cwd
+                |> FileSystem.realPath fsPerm
+                |> Task.onError
+                    (\error ->
+                        let
+                            _ =
+                                Debug.log "Error" error
+                        in
+                        Task.succeed cwd
+                    )
+                |> Task.map Path.toPosixString
+                |> Task.map (Debug.log "Path")
+    in
+    Init.await FileSystem.initialize <| \fsPerm ->
+        Node.startProgram
+            { model = {}
+            , command =
+                sayHello
+                    |> Task.andThen (\_ -> showCwd fsPerm)
+                    |> Task.execute
+            }
