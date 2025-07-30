@@ -4,13 +4,13 @@
     "name": "blaix/fake-gren-package-node",
     "summary": "Fake gren node package for testing",
     "license": "BSD-3-Clause",
-    "version": "1.0.3",
+    "version": "2.0.0",
     "exposed-modules": [
         "Fake"
     ],
-    "gren-version": "0.5.0 <= v < 0.6.0",
+    "gren-version": "0.6.0 <= v < 0.7.0",
     "dependencies": {
-        "gren-lang/core": "6.0.1 <= v < 7.0.0",
-        "gren-lang/node": "5.0.4 <= v < 6.0.0"
+        "gren-lang/core": "7.0.0 <= v < 8.0.0",
+        "gren-lang/node": "6.0.0 <= v < 7.0.0"
     }
 }
